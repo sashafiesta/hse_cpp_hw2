@@ -51,8 +51,8 @@ std::shared_ptr<Expression<std::complex<double>>> parse(const std::string& sourc
             split.push_back(field);
         else if (ss.eof())
             break;
-        ss.clear();
     }
+    ss.clear();
     std::stack<std::shared_ptr<Expression<std::complex<double>>>> rpn;
     for (std::string lexem : split) {
         if (std::isdigit(lexem.front()) || lexem.front() == '.')
