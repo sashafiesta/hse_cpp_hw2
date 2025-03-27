@@ -6,7 +6,7 @@
 #include <complex>
 #include "symbolic.hpp"
 
-int main2()
+int main()
 {
     std::cout << "Testing ConstExpression creation (2)...\n";
     auto e1 = ConstExpression<double>(2);
