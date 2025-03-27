@@ -206,7 +206,7 @@ public:
         switch (type) {
         case ADD: return std::make_shared<BinaryOperationExpression<T>>(*diff_l + *diff_r);
         case SUB: return std::make_shared<BinaryOperationExpression<T>>(*diff_l - *diff_r);
-        case MUL: return std::make_shared<BinaryOperationExpression<T>>(((*diff_l) * (*operand_left)) + ((*operand_left) * (*diff_r)));
+        case MUL: return std::make_shared<BinaryOperationExpression<T>>(((*diff_l) * (*operand_right)) + ((*operand_left) * (*diff_r)));
         case DIV: return std::make_shared<BinaryOperationExpression<T>>(((*diff_l) * (*operand_left)) - ((*operand_left) * (*diff_r)) / ((*operand_right) * (*operand_right)));
         case POW: return std::make_shared<BinaryOperationExpression<T>>(((*operand_right) * ((*operand_left) ^ (*operand_right - ConstExpression<T>(1))) * (*diff_l)) - ((((*operand_left) ^ (*operand_right)) * (*diff_r)) * UnaryOperationExpression<T>(UnaryOperationExpression<T>::Type::LOG, *operand_left)));
         default: throw std::runtime_error("Unknown unary operation");
