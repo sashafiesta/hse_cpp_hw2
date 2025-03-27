@@ -110,23 +110,57 @@ std::shared_ptr<Expression<std::complex<double>>> parse(const std::string& sourc
     }
     return rpn.top();
 }
+
+int fail(std::string s) {
+    std::cout << "Usage:\n";
+    std::cout << s << " --diff \"[expression]\" --by [variable]\n";
+    std::cout << s << " --eval \"[expression]\" --by [variable]=[value]\n";
+    return 0;
+}
+
 int main(int argc, char** argv) {
     std::string input;
-    if (argc == 1) {
-        std::cout << "Please input an expression in RPN form:\n";
-        std::string inp;
-        std::getline(std::cin, input);
+    std::string by;
+    std::unordered_map<std::string, std::complex<double>> env;
+    if (argc < 3)
+        return fail(std::string(argv[0]));
+    if (std::string(argv[1]) == "--diff") {
+        input = argv[2];
+        if (argc != 5)
+            return fail(std::string(argv[0]));
+        if (std::string(argv[3]) != "--by")
+            return fail(std::string(argv[0]));
+        by = std::string(argv[4]);
+        std::shared_ptr<Expression<std::complex<double>>> expr = parse(input);
+        std::cout << expr->differentiate(by)->to_string();
     }
-    else {
-        for (int i = 1; i < argc; i++) {
-            input += std::string(argv[i]);
-            input += " ";
+    else if (std::string(argv[1]) == "--eval") {
+        input = argv[2];
+        std::string vname = "";
+        std::string vvalue = "";
+        for (int i = 3; i < argc; i++) {
+            vname.clear();
+            vvalue.clear();
+            bool was_eq = false;
+            for (char c : std::string(argv[i])) {
+                if (c == '=') {
+                    if (was_eq)
+                        return fail(std::string(argv[0]));
+                    was_eq = true;
+                    continue;
+                }
+                if (was_eq)
+                    vvalue.push_back(c);
+                else
+                    vname.push_back(c);
+            }
+            env[vname] = parse_number_complex(vvalue);
         }
-        if (!input.empty())
-            input.pop_back();
+        std::shared_ptr<Expression<std::complex<double>>> expr = parse(input);
+        std::cout << expr->eval(env);
     }
-    std::shared_ptr<Expression<std::complex<double>>> expr = parse(input);
-    std::cout << "You entered:" << '\n' << expr->to_string() << '\n';
-    std::cout << "Derivative:" << '\n' << expr->differentiate("x")->to_string() << '\n';
+    else
+        return fail(std::string(argv[0]));
     return 0;
+    
 }
